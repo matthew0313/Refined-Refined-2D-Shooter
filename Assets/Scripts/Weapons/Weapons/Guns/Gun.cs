@@ -26,7 +26,7 @@ public class Gun : Weapon
     public override void AttemptFire()
     {
         base.AttemptFire();
-        if (counter > fireRate && currentMag > 0 && reloading == null)
+        if (counter > fireRate && currentMag > 0 && !reloading)
         {
             counter = 0.0f;
             Fire();
@@ -51,13 +51,13 @@ public class Gun : Weapon
             bul.Set(damage, range, bulletSpeed, knockback, enemy, bulletPierce, reflectable);
         }
     }
-    IEnumerator reloading = null;
+    bool reloading = false;
     float reloadCounter = 0.0f;
     public override float gaugeFill { get { return reloadCounter / reloadTime; } }
     public override void AttemptReload()
     {
         base.AttemptReload();
-        if(currentMag < magSize && currentAmmo > 0 && reloading == null)
+        if(currentMag < magSize && currentAmmo > 0 && !reloading)
         {
             Reload();
         }
@@ -68,9 +68,8 @@ public class Gun : Weapon
         tmp.clip = reloadSound;
         tmp.Play();
         reloadCounter = reloadTime;
-        reloading = Reloading();
-        reloading = Reloading();
-        user.StartCoroutine(reloading);
+        reloading = true;
+        user.StartCoroutine(Reloading());
     }
     IEnumerator Reloading()
     {
@@ -86,7 +85,7 @@ public class Gun : Weapon
             currentAmmo -= amount;
             currentMag += amount;
         }
-        reloading = null;
+        reloading = false;
     }
     public override string AmmoDesc()
     {
